@@ -47,6 +47,7 @@ public class LoginController {
 		//Guardamos los datos que sean necesarios en sesión
 		session.setAttribute("idUsuario", usuario.getIdUsuario());
 		session.setAttribute("fullName", usuario.getFullName());
+		session.setAttribute("idTipo", usuario.getTipo().getIdTipo());
 		
 		// Tiempo máximo de inactividad: 5 minutos
 		session.setMaxInactiveInterval(300);
