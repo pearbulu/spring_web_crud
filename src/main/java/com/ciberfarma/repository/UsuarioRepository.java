@@ -21,4 +21,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 				(u.tipo.idTipo = :idTipo or :idTipo is null)
 			""")
 	List<Usuario> findAllByFilters(@Param("idTipo") Integer idTipo);
+	
+	boolean existsByCuenta(String cuenta);
+	
+	boolean existsByCuentaAndIdUsuarioNot(String cuenta, Integer idUsuario);
 }

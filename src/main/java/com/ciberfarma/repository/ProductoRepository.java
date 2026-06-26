@@ -28,4 +28,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 		@Param("idCategoria") Integer idCategoria,
 		@Param("idProveedor") Integer idProveedor
 	);
+	
+	boolean existsByDescripcion(String descripcion);
+	
+	boolean existsByDescripcionAndIdProductoNot(String descripcion, Integer idProducto);
 }

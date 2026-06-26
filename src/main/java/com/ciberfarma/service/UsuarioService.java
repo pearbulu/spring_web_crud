@@ -17,54 +17,67 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioService {
 	public final UsuarioRepository usuarioRepository;
-	
+
 	public List<Usuario> search(UsuarioFilter filter) {
 		return usuarioRepository.findAllByFilters(filter.getIdTipo());
 	}
-	
-	public ResultadoResponse create(Usuario producto) {
+
+	public ResultadoResponse create(Usuario usuario) {
+
+		var existe = usuarioRepository.existsByCuenta(usuario.getCuenta());
+
+		if (existe) {
+			return new ResultadoResponse(false, "Ya existe un usuario con esa cuenta.");
+		}
+
 		try {
-			var registro = usuarioRepository.save(producto);
+			var registro = usuarioRepository.save(usuario);
 			var mensaje = String.format("Usuario con Id %s registrado", registro.getIdUsuario());
-			
+
 			return new ResultadoResponse(true, mensaje);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResultadoResponse(false, "Hubo un error en la transacción");
 		}
 	}
-	
+
 	public Usuario getOne(Integer id) {
 		return usuarioRepository.findById(id).orElse(null);
 	}
-	
+
 	public ResultadoResponse update(Usuario usuario) {
+		var existe = usuarioRepository.existsByCuentaAndIdUsuarioNot(usuario.getCuenta(), usuario.getIdUsuario());
+
+		if (existe) {
+			return new ResultadoResponse(false, "Ya existe un usuario con esa cuenta.");
+		}
+		
 		try {
 			var registro = usuarioRepository.save(usuario);
 			var mensaje = String.format("Usuario con Id %s actualizado", registro.getIdUsuario());
-			
+
 			return new ResultadoResponse(true, mensaje);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResultadoResponse(false, "Hubo un error en la transacción");
 		}
 	}
-	
+
 	@Transactional
 	public ResultadoResponse changeActive(Integer id) {
 		var usuario = usuarioRepository.findById(id).orElse(null);
-		
+
 		try {
 			usuario.setActivo(!usuario.getActivo());
-			
+
 			var estado = usuario.getActivo() ? "activado" : "desactivado";
 			var mensaje = String.format("Usuario con Id %s %s", usuario.getIdUsuario(), estado);
-			
+
 			return new ResultadoResponse(true, mensaje);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResultadoResponse(false, "Hubo un error en la transacción");
 		}
-	}	
+	}
 
 }
