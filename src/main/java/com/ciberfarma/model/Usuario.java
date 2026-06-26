@@ -2,6 +2,9 @@ package com.ciberfarma.model;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +20,7 @@ import lombok.Setter;
 @Table(name = "tbl_usuario")
 @Getter
 @Setter
+@DynamicInsert
 public class Usuario {
 
 	@Id
@@ -36,8 +40,9 @@ public class Usuario {
 	@Column(name = "clave")
 	private String clave;
 
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "fecha_nac")
-	private LocalDate fecha_nac;
+	private LocalDate fechaNac;
 
 	@Column(name = "activo")
 	private Boolean activo;
@@ -48,5 +53,9 @@ public class Usuario {
 
 	public String getFullName() {
 		return String.format("%s %s", nombres, apellidos);
+	}
+	
+	public String getActivoDescripcion() {
+		return activo ? "Activo" : "Inactivo";
 	}
 }

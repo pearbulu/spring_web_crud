@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layoutBase(~{::contenido})">
+
+<div th:fragment="contenido">
+	<div class="container mt-5">
+		<div class="card shadow-lg">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-10">
+						<h1 class="card-title">Listado de usuarios</h1>
+					</div>
+					<div class="col-md-2">
+						<a th:href="@{/usuario/nuevo}" class="btn btn-success w-100"> <i class="fa-solid fa-plus"></i>
+							Nuevo
+						</a>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<fieldset class="border border-2 border-dark pb-2">
+						<legend class="float-none w-auto px-2">Filtros</legend>
+						<form th:action="@{/usuario/listado}" method="get" th:object="${filter}">
+							<div class="row align-items-end">
+								<div class="col-md-3">
+									<label for="proveedor" class="form-label">Tipo</label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+										<select class="form-select" th:field="*{idTipo}">
+											<option value="">--Todos-- </option>
+											<option th:each="item: ${tipos}" th:value="${item.idTipo}"
+												th:text="${item.descripcion}"></option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-9 text-end">
+									<button type="submit" class="btn btn-outline-dark">
+										<i class="fa-solid fa-binoculars"></i> Buscar
+									</button>
+									<a th:href="@{/usuario/listado}" class="btn btn-outline-secondary">
+										<i class="fa-solid fa-broom"></i> Limpiar
+									</a>
+								</div>
+							</div>
+						</form>
+					</fieldset>
+				</div>
+				<table id="tbl-usuario" class="table table-hover table-responsive">
+					<thead class="table-dark text-center">
+						<tr>
+							<th>Id</th>
+							<th>Nombre completo</th>
+							<th>Cuenta</th>
+							<th>Fecha de nacimiento</th>
+							<th>Tipo de usuario</th>
+							<th>Activo</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody class="table-secondary">
+						<tr th:each="item: ${lstUsuarios}">
+							<td th:text="${item.idUsuario}" class="text-center"></td>
+							<td th:text="${item.fullName}"></td>
+							<td th:text="${item.cuenta}"></td>
+							<td th:text="${item.fechaNac}" class="text-center"></td>
+							<td th:text="${item.tipo.descripcion}"></td>
+							<td>
+								<span class="badge" th:classappend="(${item.activo}) ? 'bg-success' : 'bg-secondary'"
+									th:text="${item.activoDescripcion}">
+								</span>
+							</td>
+							<td class="text-center">
+								<div class="d-flex justify-content-center align-items-center gap-2">
+									<a th:href="@{/usuario/edicion/{id}(id=${item.idUsuario})}"
+										class="btn btn-outline-primary" title="Editar" aria-label="Editar"
+										role="button">
+										<i class="fa-regular fa-pen-to-square"></i>
+									</a>
+									<form method="post" th:action="@{/usuario/cambiar-estado}">
+										<div class="form-switch">
+											<input type="hidden" th:name="id" th:value="${item.idUsuario}">
+											<input class="form-check-input" type="checkbox" th:checked="${item.activo}"
+												onchange="this.form.submit()">
+										</div>
+									</form>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		$(function () {
+			$('#tbl-usuario').DataTable({
+				language: {
+					search: 'Buscar (Nombre completo, Cuenta):',
+					url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
+				},
+				pageLength: 10,
+				lengthMenu: [5, 10, 25, 50],
+				ordering: true,
+				order: [
+					[0, 'desc']
+				],
+				responsive: true,
+				columnDefs: [
+					{targets: [4,5,6], orderable: false},
+					{targets: [0,3,4,5,6], searchable: false}
+				]
+			});
+		});
+	</script>
+</div>
+
+</html>

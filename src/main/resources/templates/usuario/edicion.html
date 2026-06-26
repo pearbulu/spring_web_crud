@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layoutBase(~{::contenido})">
+
+<div th:fragment="contenido">
+	<div class="container mt-5">
+		<div class="card shadow-lg">
+			<div class="card-body">
+				<h1 class="card-title text-center" th:text="|Usuario Edición - Id ${usuario.idUsuario}|"></h1>
+				<div class="row d-flex justify-content-center">
+					<div class="col-md-6">
+						<form id="form-producto" th:action="@{/usuario/guardar}" th:object="${usuario}" class="row g-2"
+							method="post" novalidate>
+							<input type="hidden" th:field="*{idUsuario}">
+							<div class="col-md-12 position-relative">
+								<label for="nombres" class="form-label"> Nombres
+								</label> <input type="text" class="form-control" th:field="*{nombres}"
+									placeholder="Ingrese su nombre" required>
+							</div>
+							<div class="col-md-12 position-relative">
+								<label for="apellidos" class="form-label"> Apellidos
+								</label> <input type="text" class="form-control" th:field="*{apellidos}"
+									placeholder="Ingrese su apellido" required>
+							</div>
+							<div class="col-md-12 position-relative">
+								<label for="cuenta" class="form-label"> Cuenta
+								</label> <input type="text" class="form-control" th:field="*{cuenta}"
+									placeholder="Ingrese una cuenta" required>
+							</div>
+							<input type="hidden" th:field="*{clave}">
+							<div class="col-md-6 position-relative">
+								<label for="fechaNac" class="form-label"> Fecha de nacimiento
+								</label> <input type="date" class="form-control" th:field="*{fechaNac}"
+									placeholder="Seleccione una fecha de nacimiento">
+							</div>
+							<div class="col-md-6 position-relative">
+								<label for="tipo" class="form-label">tipo</label>
+								<div class="input-group">
+									<span class="input-group-text"> <i class="fa-solid fa-user-tag"></i>
+									</span> <select class="form-select" th:field="*{tipo}">
+										<option value="" selected hidden="hidden">--Seleccione--
+										</option>
+										<option th:each="item: ${tipos}" th:value="${item.idTipo}"
+											th:text="${item.descripcion}"></option>
+									</select>
+								</div>
+							</div>
+							<input type="hidden" th:field="*{activo}">
+							<div class="col-md-12 d-flex justify-content-between">
+								<!-- Botón Regresar -->
+								<a th:href="@{/usuario/listado}" class="btn btn-outline-dark">
+									<i class="fa-solid fa-reply"></i> Regresar
+								</a>
+								<!-- Botón Registrar -->
+								<button type="submit" class="btn btn-primary">
+									<i class="fa-solid fa-floppy-disk"></i> Guardar
+								</button>
+								<!-- Botón Limpiar -->
+								<button type="reset" class="btn btn-secondary">
+									<i class="fa-solid fa-broom"></i> Limpiar
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$("#form-producto").validate({
+				rules: {
+					nombres: {
+						required: true
+					},
+					apellidos: {
+						required: true
+					},
+					cuenta: {
+						required: true,
+						email: true
+					},
+					clave: {
+						required: true
+					},
+					tipo: {
+						required: true
+					}
+				},
+				messages: {
+					nombres: {
+						required: "campo requerido"
+					},
+					apellidos: {
+						required: "campo requerido"
+					},
+					cuenta: {
+						required: "campo requerido",
+						email: "formato de correo no válido"
+					},
+					clave: {
+						required: "campo requerido"
+					},
+					tipo: {
+						required: "campo requerido"
+					}
+				},
+				errorElement: 'div',
+				errorClass: 'invalid-tooltip',
+				highlight: function (element) {
+					$(element).addClass('is-invalid').removeClass('is-valid');
+				},
+				unhighlight: function (element) {
+					$(element).removeClass('is-invalid').addClass('is-valid');
+				}
+			});
+		});
+	</script>
+
+</div>
