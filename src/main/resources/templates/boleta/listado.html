@@ -47,12 +47,13 @@
 							<th>Usuario</th>
 							<th>Rol</th>
 							<th>Total</th>
+							<th>Acciones</th>
 						</tr>
 					</thead>
 					<tbody class="table-secondary">
-						<!--<tr th:each="item : ${lstBoletas}">
+						<tr th:each="item : ${lstBoletas}">
 						<td th:text="${item.numBoleta}" class="text-center"></td>
-						<td th:text="${item.fecha}" class="text-center"></td>
+						<td th:text="${item.fechaRegistro}" class="text-center"></td>
 						<td th:text="${item.usuario.fullName}"></td>
 						<td th:text="${item.usuario.tipo.descripcion}"></td>
 						<td th:text="|S/. ${#numbers.formatDecimal(item.total,1,2,'POINT')}|" class="text-end">
@@ -63,7 +64,7 @@
 								<i class="fa-solid fa-file-pdf fa-lg"></i>
 							</a>
 						</td>
-					</tr>-->
+					</tr>
 					</tbody>
 				</table>
 			</div>

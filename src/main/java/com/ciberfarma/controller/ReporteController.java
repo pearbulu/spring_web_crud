@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,13 +25,13 @@ public class ReporteController {
 	private ReporteService reporteService;
 
 	@GetMapping("boleta")
-	public void boletaReporte(@RequestParam Integer numBol, HttpServletResponse response) throws Exception {
+	public void boleta(@RequestParam Integer numBol, HttpServletResponse response) throws Exception {
 		// Ruta del reporte (en resources/reportes)
-		String reportPath = "/reporte/tu_nombre_proyecto_jasper.jrxml";
+		String reportPath = "/reporte/boleta.jrxml";
 
 		// Parámetros
 		Map<String, Object> params = new HashMap<>();
-		params.put("tu_parametro_de_jasper", numBol);
+		params.put("pNumBoleta", numBol);
 		
 		//Get JasperPrint
 		JasperPrint jasperPrint = reporteService.getJasperPrint(params, reportPath);

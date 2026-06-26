@@ -5,7 +5,7 @@
 
 	<div class="container mt-4">
 
-		<form action="#" method="post">
+		<form th:action="@{/boleta/registrar}" method="post">
 			<div class="row mb-3 mt-5 align-items-center">
 				<div class="col-md-10">
 					<h1 class="m-0">Emisión de boleta</h1>
@@ -94,7 +94,7 @@
 								<td th:text="${item.cantidad}" class="text-end"></td>
 								<td th:text="|S/. ${#numbers.formatDecimal(item.subtotal, 1, 'COMMA', 2, 'POINT')}|"
 								 class="text-end"></td>
-								<td class="text-center"
+								<td class="text-center">
 									<form th:action="@{/boleta/remover}" method="post">
 										<input type="hidden" name="id" th:value="${item.idProducto}" />
 										<button class="btn btn-danger btn-sm">

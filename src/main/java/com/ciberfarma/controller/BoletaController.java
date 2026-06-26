@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ciberfarma.dto.ProductoSeleccionado;
+import com.ciberfarma.model.Boleta;
+import com.ciberfarma.model.DetalleBoleta;
 import com.ciberfarma.service.BoletaService;
 import com.ciberfarma.service.ProductoService;
+import com.ciberfarma.service.UsuarioService;
 import com.ciberfarma.util.Alert;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -28,6 +32,7 @@ public class BoletaController {
 
 	private final BoletaService boletaService;
 	private final ProductoService productoService;
+	private final UsuarioService usuarioService;
 
 	@ModelAttribute("seleccionados")
 	public List<ProductoSeleccionado> inicio() {
@@ -36,7 +41,7 @@ public class BoletaController {
 
 	@GetMapping("listado")
 	public String listado(Model model) {
-		model.addAttribute(boletaService.getAll());
+		model.addAttribute("lstBoletas", boletaService.getAll());
 		return "boleta/listado";
 	}
 
@@ -70,8 +75,8 @@ public class BoletaController {
 		return "boleta/nuevo";
 	}
 
-	@PostMapping("/remover")
-	public String quitar(@RequestParam Integer id,
+	@PostMapping("remover")
+	public String remover(@RequestParam Integer id,
 		@ModelAttribute("seleccionados") List<ProductoSeleccionado> seleccionados, 
 		Model model
 	) {
@@ -80,30 +85,56 @@ public class BoletaController {
 
 		model.addAttribute("productos", productoService.getAllActive());
 		model.addAttribute("productoSeleccionado", new ProductoSeleccionado());
-		return "boletas/nuevo";
+		return "boleta/nuevo";
 	}
 
 	@PostMapping("/registrar")
 	public String registrar(
+		@ModelAttribute Boleta boleta,
 		@ModelAttribute("seleccionados") List<ProductoSeleccionado> seleccionados, 
 		Model model,
-		RedirectAttributes flash
+		RedirectAttributes flash,
+		HttpSession session
 	) {
 		model.addAttribute("productos", productoService.getAllActive());
 		model.addAttribute("productoSeleccionado", new ProductoSeleccionado());
 
 		// Obtenemos dato de sesión
+		var idUsuario = (Integer) session.getAttribute("idUsuario");
 
 		// Validamos sesión
+		if (idUsuario == null) {
+			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("Su sesión ha expirado"));
+			return "redirect:/";
+		}
 
 		// obtenemos al usuario y lo seteamos
+		var usuario = usuarioService.getOne(idUsuario);
+		boleta.setUsuario(usuario);
 
 		// Validamos que al menos haya un seleccionado
+		if (seleccionados.stream().count() == 0) {
+			model.addAttribute("alert", Alert.sweetAlertInfo("Agregue como min 1 producto"));
+			return "boleta/nuevo";
+		}
 
 		// Mapeamos los datos seleccionados a DetalleBoleta y lo seteamos
+		var lstDetalleBoleta = seleccionados.stream().map(
+			item -> {
+				var detalle = new DetalleBoleta();
+				detalle.setBoleta(boleta);
+				detalle.setProducto(productoService.getOne(item.getIdProducto()));
+				detalle.setCantidad(item.getCantidad());
+				detalle.setPrecioVenta(item.getPrecio());
+				return detalle;
+			}
+		).toList();
 
-		// Construimos y registramos la nueva boleta
-
+		// Seteamos el listado del detalle y registramos la nueva boleta
+		boleta.setLstDetalleBoleta(lstDetalleBoleta);
+		
+		var response = boletaService.create(boleta);
+		flash.addFlashAttribute("toast", Alert.sweetToast(response.mensaje(), "success", 5000));		
 		return "redirect:/boleta/listado";
 	}
 }
